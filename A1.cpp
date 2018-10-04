@@ -12,8 +12,14 @@
 #include <algorithm>
 #include <thread>
 #include <stdlib.h>
+#include <cstring>
 //#include <word.h>
 using namespace std;
+
+typedef struct wordhash{
+    char word[80];
+    int freq;
+}wordhash;
 
 vector<int> nums;
 vector<string> words;
@@ -104,21 +110,19 @@ void map(string infile, bool wordcount, bool proc, int maps){
     }
 
     if(proc){ // use processes
-        shm_unlink("/shm");
-        int fd = shm_open("/shm", O_CREAT | O_RDWR, 0666);
+        int fd = shm_open("shm", O_CREAT | O_RDWR, 0666);
         if(wordcount){
             // size shared memory
-            ftruncate(fd, words.size()*sizeof(string));
-            string *data = (string*)mmap(0, words.size()*sizeof(words.at(1)), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+            ftruncate(fd, words.size()*sizeof(wordhash));
+            wordhash *data = (wordhash*)mmap(0, words.size()*sizeof(wordhash), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
             // copy to shared memory
             for(int i = 0; i < words.size(); i++){
-                new (data + i)string(words.at(i));
-                cout << data[i] << " ";
+                strcpy(data[i].word, words[i].c_str());
+                data[i].freq = 1;
             }
-            cout << endl;
             // map
-            //process_func((char*)"./sortwords", maps, words.size());
+            process_func((char*)"./sortwords", maps, words.size());
             
         }
         else{
@@ -137,7 +141,6 @@ void map(string infile, bool wordcount, bool proc, int maps){
     else{ // use threads
         
     }
-    shm_unlink("/shm");
 }
 
 int main(int argc, char **argv){
@@ -157,4 +160,5 @@ int main(int argc, char **argv){
         string infile = argv[10];
         map(infile, wordcount, proc, maps);
     }
+    shm_unlink("/shm");
 }
