@@ -16,13 +16,13 @@
 //#include <word.h>
 using namespace std;
 
+vector<int> nums;
+vector<string> words;
+
 typedef struct wordhash{
     char word[80];
     int freq;
-}wordhash;
-
-vector<int> nums;
-vector<string> words;
+} wordhash;
 
 void fill_words(string filename){
     ifstream file(filename);
