@@ -1,0 +1,283 @@
+//
+//  main.cpp
+//  mapred
+//
+//  Created by Amruta Abhyankar on 9/30/18.
+//  Copyright © 2018 Amruta Abhyankar. All rights reserved.
+//
+
+#include <iostream>
+#include <thread>
+#include <cstdlib>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
+#include <vector>
+#include <cstdlib>
+#include <pthread.h>
+#include <thread>
+#include <condition_variable> // used as signal mechanism between threads
+#include <mutex>
+#include <map>
+std::mutex mu;
+using namespace std;
+vector<string> sc;
+vector<string> result;
+vector<string> counts;
+vector<string> finals;
+
+void print(std::vector<string> const &input){
+    
+    for(int i = 0 ; i < input.size(); i++){
+        if(input.at(i) != " "){
+            std::cout<< input.at(i)<< ' '<<'\n';
+        }
+    }
+}
+
+void exec(int n, vector<string> v1){
+    
+    std::cout << "thread " << n << "\n";
+    string words;
+    int word_Count = 1;
+    words = v1[0];
+    for(int i=1; i < v1.size()+1; i++){
+        //mtx.lock();
+        //cout<<"Word 2 is "<< v1[i+1] <<'\n';
+        if(words != v1[i] || words == v1[v1.size()]){
+            //cout<<words<<" "<< word_Count<<endl;
+            std::string s = std::to_string(word_Count);
+            word_Count = 0;
+            string ss = words +" "+ s;
+            sc.push_back(ss);
+            words = v1[i];
+        }
+        word_Count++;
+        
+    }
+}
+void wordcountMapThreads(string filename, int nthreads){
+    string counts;
+    string line;
+    vector<string> temp;
+    vector<string> tokens;
+    cout<<"I am in the word count threads function \n" << endl;
+    cout<<"The text file name is : "<< filename <<endl;
+    ifstream myfile(filename);
+    if (myfile.is_open()){
+        while(getline (myfile,line)){
+            bool my_predicate(char c);
+            string s;
+            s = line;
+            s.erase(remove_if(s.begin(), s.end(), [&](char c) {return ispunct(c); } ), s.end());
+            
+            /**char chars[] = "—";
+             
+             for (unsigned int i = 0; i < strlen(chars); ++i)
+             {
+             // you need include <algorithm> to use general algorithms like std::remove()
+             s.erase (std::remove(s.begin(), s.end(), chars[i]), s.end());
+             }
+             //cout << s << endl;**/
+            istringstream iss(s);
+            
+            copy(istream_iterator<string>(iss),
+                 istream_iterator<string>(),
+                 back_inserter(tokens));
+        }
+        std::vector<std::string> v1;
+        v1.reserve(tokens.size());
+        std::transform(
+                       tokens.begin(),
+                       tokens.end(),
+                       std::back_inserter(v1),
+                       [](const std::string& in) {
+                           std::string out;
+                           out.reserve(in.size());
+                           std::transform(in.begin(), in.end(), std::back_inserter(out),::tolower);
+                           return out;
+                       }
+                       );
+        //print(v1);
+        //cout<<"The size of vector is :"<<v1.size()<<endl;
+        //print(v1);
+        float v_size = v1.size();
+        int parts = int(v_size/nthreads +1);
+        //cout<<parts<<endl;
+        
+        for ( int j = 0; j<nthreads; j++){
+            for (int i=0; i<parts; i++){
+                temp.push_back(v1[i]);
+            }
+            if(v1.size()>parts){
+                v1.erase(v1.begin(),v1.begin()+(parts));
+            }
+            else{
+                //print(v1);
+                cout<<"Size of v1 is :"<<v1.size();
+                cout<<"I am in the else loop"<<endl;
+                /**for( unsigned i = 0;i<v1.size();i++){
+                 cout<<v1[i]<<endl;
+                 }**/
+                cout<<"------------------------------------"<<endl;
+                /**for(unsigned i = 0;i<temp.size();i++){
+                 cout<<temp[i]<<endl;
+                 }**/
+                temp.clear();
+                for(unsigned i = 0;i<v1.size();i++){
+                    temp.push_back(v1[i]);
+                }
+                cout<<"------------------------------------"<<endl;
+                //print(temp);
+            }
+            
+            cout<<">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<endl;
+            //print(v1);
+            cout<<"v1 size"<<v1.size()<<endl;
+            cout<<"temp size"<<temp.size()<<endl;
+            //print(temp);
+            //print(v1);
+            cout<<"**********************************************************"<<endl;
+            std::thread myThreads[nthreads];
+            myThreads[j] = std::thread(exec, j, temp);
+            myThreads[j].join();
+            temp.clear();
+            //print(temp);
+            
+        }
+        
+    }
+    sort(sc.begin(),sc.end());
+    //print(sc);
+    
+}
+
+void addtokens(vector<string> s1){
+    vector<string> temp;
+    string words1;
+    //sort(s1.begin(), s1.end());
+    int word_Count = 1;
+    words1 = s1[0];
+    //cout<<"Word is "<< words1 <<'\n';
+    for(int i=1; i < s1.size()+1; i++){
+        //cout<<"Word 2 is "<< v1[1] <<'\n';
+        if(words1 != s1[i]){
+            //cout<<" "<<'\n';
+            string st = words1.substr(0, words1.size()-1);
+            //cout<<st<<" "<< word_Count<<endl;
+            std::string wc = std::to_string(word_Count);
+            result.push_back(st+wc);
+            word_Count = 0;
+            words1 = s1[i];
+        }
+        word_Count++;
+    }
+}
+
+void wordcountReduceThreads(vector<string> s, int threads){
+    vector<string> temp;
+    float v_size = s.size();
+    int parts = int((v_size/threads) + 1);
+    //cout<<parts<<endl;
+    for ( int j = 0; j<threads; j++){
+        for (int i=0; i<parts; i++){
+            temp.push_back(s[i]);
+        }
+        if(s.size()>parts){
+            s.erase(s.begin(),s.begin()+(parts));
+        }
+        else{
+            //print(s);
+            cout<<"Size of v1 is :"<<s.size();
+            cout<<"I am in the else loop"<<endl;
+            /**for( unsigned i = 0;i<s.size();i++){
+             cout<<s[i]<<endl;
+             }**/
+            cout<<"------------------------------------"<<endl;
+            /**for(unsigned i = 0;i<temp.size();i++){
+             cout<<temp[i]<<endl;
+             }**/
+            temp.clear();
+            for( unsigned i = 0;i<s.size();i++){
+                temp.push_back(s[i]);
+            }
+            cout<<"------------------------------------"<<endl;
+            //print(temp);
+        }
+        
+        cout<<">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<endl;
+        //print(v1);
+        cout<<"v1 size"<<s.size()<<endl;
+        cout<<"temp size"<<temp.size()<<endl;
+        //print(temp);
+        //print(v1);
+        cout<<"**********************************************************"<<endl;
+        std::thread myThreads[threads];
+        myThreads[j] = std::thread(addtokens,temp);
+        myThreads[j].join();
+        temp.clear();
+        //print(temp);
+        
+    }
+    //sort(result.begin(),result.end());
+    //print(result);
+    cout<<"************************"<<endl;
+    //std::map<std::string, int> mapped_values;
+    //std::copy(result.begin(), result.end(),std::inserter(mapped_values, mapped_values.begin()));
+    
+
+    finals.push_back(result[0]);
+    for(int i=1; i<result.size()+1; ++i){
+        if(result[i-1].substr(0,result[i-1].size()-1) == result[i].substr(0,result[i].size()-1)){
+            //cout<<"Same strings"<<endl;
+            string words = result[i-1].substr(0,result[i-1].size()-1);
+            string s1 = (result[i-1].substr(result[i-1].size()-1,result[i-1].size()));
+            string s2 = (result[i].substr(result[i].size()-1,result[i].size()));
+            //cout<<result[i].substr(result[i].size()-1,result[i].size())<<endl;
+            stringstream geek(s1);
+            stringstream geek2(s2);
+            int x1 = 0;
+            int x2 = 0;
+            int sum = 0;
+            geek >> x1;
+            geek2 >> x2;
+            //cout<<x1<<endl;
+            //cout<<x2<<endl;
+            sum = x1+x2;
+            cout<<words<<" "<<sum<<endl;
+            std::string wcc = std::to_string(sum);
+            finals.pop_back();
+            //finals.pop_back();
+            finals.push_back(words+" "+ wcc);
+            
+        }
+        else{
+            finals.push_back(result[i]);
+        }
+        
+    }
+    for(int i=0; i<finals.size(); i++){
+        if(finals[i].substr(0,finals[i].size()-1) == finals[i+1].substr(0,finals[i+1].size()-1)){
+            cout<<"Doubles"<<endl;
+            finals.erase(finals.begin()+i,finals.begin()+i+1);
+    }
+    }
+    cout<<"**************************************"<<endl;
+    sort(finals.begin(),finals.end());
+    print(finals);
+    
+    
+
+    std::ofstream output_file("./word_output.txt");
+    std::ostream_iterator<std::string> output_iterator(output_file, "\n");
+    std::copy(finals.begin(), finals.end(), output_iterator);
+    
+}
+int main(int argc, const char * argv[]) {
+    string textfilename = "word_input.txt";
+    wordcountMapThreads(textfilename, 10);
+    wordcountReduceThreads(sc, 10);
+    return 0;
+}
