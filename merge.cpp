@@ -77,7 +77,7 @@ Node* mergeTheLists(Node* arr[], int lastone)
 	// repeating this process until one list is left
 	while (lastone != 0)
 	{
-		j = lastone;
+		int j = lastone;
 		int i = 0;
 
 		// Comparing the pair 
@@ -112,9 +112,3 @@ Node *newNode(int item)
 }
 
 
-
-
-
-
-
-}
