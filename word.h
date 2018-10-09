@@ -26,14 +26,33 @@
 using namespace std;
 
 
-//
+struct vecWord {
+		string word;
+		int freq;
+		
+	vecWord(char w, int f) 
+	{
+	string = w;
+	freq = f;
+	}
+	
+		}
+
+
+
 
 int main()
 {
 
-	char *MyStr = words.;
-	string word = MyStr;
+	
+// We next then have organize all the words in the string in alphabetical order
 
+int low;
+int high;
+	
+sort(num.begin()+low,num.end()+high);
+	
+	
 
 
 	// We first begin by counting the specific amount of each word
@@ -58,50 +77,12 @@ int main()
 
 
 
-	// We next then have organize all the words in the string in alphabetical order
+	
 
 
 
 
 
-// Bubble Sorting the string!       
-
-
-// Each process will have it's string of  works be sorted in aplebetical order
-
-
-// for each proccess
-
-
-	void sortingStrings(char ar[][MAX], int n)
-	{
-		char temp[MAX];
-
-		// Sorting strings using bubble sort 
-		for (int j = 0; j < n - 1; j++)
-		{
-			for (int i = j + 1; i < n; i++)
-			{
-				if (strcmp(ar[j], ar[i]) > 0)
-				{
-					strcpy(temp, ar[j]);
-					strcpy(ar[j], ar[i]);
-					strcpy(ar[i], temp);
-				}
-			}
-		}
-	}
-
-	int main()
-	{
-
-		int n = sizeof(ar) / sizeof(ar[0]);
-
-		sortingStrings(ar, n);
-
-		// from here the string should sorted in order
-		return 0;
-	}
 
 }
 
