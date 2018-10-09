@@ -5,7 +5,7 @@
 //  Created by Amruta Abhyankar on 9/30/18.
 //  Copyright © 2018 Amruta Abhyankar. All rights reserved.
 //
-
+#include <math.h>
 #include <iostream>
 #include <thread>
 #include <cstdlib>
@@ -21,13 +21,18 @@
 #include <condition_variable> // used as signal mechanism between threads
 #include <mutex>
 #include <map>
+#include <regex>
+
 std::mutex mu;
 using namespace std;
 vector<string> sc;
 vector<string> result;
 vector<string> counts;
 vector<string> finals;
-
+vector<string> vins;
+vector<string> vtemp;
+vector<int> intsort;
+vector<string> intresult;
 void print(std::vector<string> const &input){
     
     for(int i = 0 ; i < input.size(); i++){
@@ -43,7 +48,7 @@ void exec(int n, vector<string> v1){
     string words;
     int word_Count = 1;
     words = v1[0];
-    for(int i=1; i < v1.size()+1; i++){
+    for(int i=0; i < v1.size(); ++i){
         //mtx.lock();
         //cout<<"Word 2 is "<< v1[i+1] <<'\n';
         if(words != v1[i] || words == v1[v1.size()]){
@@ -71,7 +76,7 @@ void wordcountMapThreads(string filename, int nthreads){
             bool my_predicate(char c);
             string s;
             s = line;
-            s.erase(remove_if(s.begin(), s.end(), [&](char c) {return ispunct(c); } ), s.end());
+            s.erase(remove_if(s.begin(), s.end(), [](char c) {return ispunct(c); } ), s.end());
             
             /**char chars[] = "—";
              
@@ -176,6 +181,8 @@ void addtokens(vector<string> s1){
     }
 }
 
+
+
 void wordcountReduceThreads(vector<string> s, int threads){
     vector<string> temp;
     float v_size = s.size();
@@ -227,7 +234,7 @@ void wordcountReduceThreads(vector<string> s, int threads){
     //std::map<std::string, int> mapped_values;
     //std::copy(result.begin(), result.end(),std::inserter(mapped_values, mapped_values.begin()));
     
-
+    
     finals.push_back(result[0]);
     for(int i=1; i<result.size()+1; ++i){
         if(result[i-1].substr(0,result[i-1].size()-1) == result[i].substr(0,result[i].size()-1)){
@@ -262,22 +269,155 @@ void wordcountReduceThreads(vector<string> s, int threads){
         if(finals[i].substr(0,finals[i].size()-1) == finals[i+1].substr(0,finals[i+1].size()-1)){
             cout<<"Doubles"<<endl;
             finals.erase(finals.begin()+i,finals.begin()+i+1);
-    }
+        }
     }
     cout<<"**************************************"<<endl;
     sort(finals.begin(),finals.end());
     print(finals);
-    
-    
-
     std::ofstream output_file("./word_output.txt");
     std::ostream_iterator<std::string> output_iterator(output_file, "\n");
     std::copy(finals.begin(), finals.end(), output_iterator);
     
 }
+
+
+//********************Sorting*************************
+
+void print2(std::vector<string> const &input){
+    for(int i = 0 ; i < input.size(); i++){
+        if(input.at(i) != " "){
+            std::cout<< input.at(i)<<endl;
+        }
+    }
+}
+void printInt(std::vector<int> const &input){
+    for(int i = 0 ; i < input.size(); i++){
+            std::cout<< input.at(i)<<endl;
+        }
+}
+
+void *sorts(void *dummyPtr){
+    //int i;
+    printf("Thread number %ld\n", long(pthread_self()));
+   
+    std::ofstream output_file("./sort_output.txt");
+    for (const auto &e : intsort) output_file << e << "\n";
+    return 0;
+}
+void isorts(int n, vector<string> v1){
+    std::cout << "thread " << n << "\n";
+    cout<<">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<endl;
+    //print(v1);
+    cout<<"vins size"<<vins.size()<<endl;
+    cout<<"vtemp size"<<vtemp.size()<<endl;
+    //sort(vtemp.begin(),vtemp.end());
+    print2(vtemp);
+    cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
+    for(int i1=0; i1<vtemp.size()-1; ++i1){
+        intsort.push_back(stoi(vtemp[i1]));
+    }
+    printInt(intsort);
+    cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<endl;
+    sort(intsort.begin(),intsort.end());
+    printInt(intsort);
+}
+
+void integerSortMapThreads(string filename, int nthreads){
+    
+    cout<<"I am inside the integer Sort"<<endl;
+    string ins;
+    ifstream ip("sort_input.csv");
+    if (!ip.is_open()) std::cout<<"ERROR: File Open"<<'\n';
+        while(ip.good()){
+            getline(ip,ins);
+            vins.push_back(ins);
+        }
+    cout<<"Map vins"<<endl;
+    //print2(vins);
+    float v_size = vins.size();
+    int parts = int(v_size/nthreads + 1);
+    for ( int j = 0; j<nthreads; j++){
+        for (int i=0; i<parts; i++){
+            vtemp.push_back(vins[i]);
+        }
+        if(vins.size()>parts){
+            vins.erase(vins.begin(),vins.begin()+(parts - 1));
+        }
+        else{
+            //print(vins);
+            cout<<"Size of vins is :"<<vins.size();
+            cout<<"I am in the else loop"<<endl;
+            /**for( unsigned i = 0;i<vins.size();i++){
+             cout<<v1[i]<<endl;
+             }**/
+            cout<<"------------------------------------"<<endl;
+            /**for(unsigned i = 0;i<temp.size();i++){
+             cout<<temp[i]<<endl;
+             }**/
+            vtemp.clear();
+            for(unsigned i = 0;i<vins.size();i++){
+                vtemp.push_back(vins[i]);
+            }
+            cout<<"------------------------------------"<<endl;
+            //print2(vtemp);
+        }
+        
+        cout<<">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<endl;
+        //print(v1);
+        cout<<"vins size"<<vins.size()<<endl;
+        cout<<"vtemp size"<<vtemp.size()<<endl;
+        //sort(vtemp.begin(),vtemp.end());
+        /***
+        print2(vtemp);
+        cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
+        for(int i1=0; i1<vtemp.size()-1; ++i1){
+                intsort.push_back(stoi(vtemp[i1]));
+        }
+        printInt(intsort);
+        cout<<"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<endl;
+        sort(intsort.begin(),intsort.end());
+        printInt(intsort);
+        //print(v1);
+        ***/
+        cout<<"**********************************************************"<<endl;
+        std::thread myThreads[nthreads];
+        myThreads[j] = std::thread(isorts, j, vtemp);
+        myThreads[j].join();
+        vtemp.clear();
+        //print(vtemp);
+}
+
+
+}
+void integerSortReduceThreads (int nthreads){
+    cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+    printInt(intsort);
+    cout<<"Size of the sorted list is :"<<intsort.size()<<endl;
+    cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+    int i, j;
+    pthread_t thread_id[nthreads];
+    
+    for(i=0; i < nthreads; i++)
+    {
+        pthread_create( &thread_id[i], NULL, sorts, NULL );
+    }
+    
+    for(j=0; j <nthreads; j++)
+    {
+        pthread_join( thread_id[j], NULL);
+    }
+    
+    //std::ofstream output_file("./sort_output.txt");
+    //for (const auto &e : intsort) output_file << e << "\n";
+}
+
+
+
 int main(int argc, const char * argv[]) {
     string textfilename = "word_input.txt";
     wordcountMapThreads(textfilename, 10);
     wordcountReduceThreads(sc, 10);
+    integerSortMapThreads("sort_input.csv", 10);
+    integerSortReduceThreads(10);
     return 0;
 }

@@ -1,7 +1,7 @@
 1914 1
 1939 1
 1945 1
-a 36
+a 35
 about 1
 abruptly 1
 abyssinians 1
@@ -12,7 +12,7 @@ aeroplane 2
 affect 1
 after 2
 again 1
-against 4
+against  4
 age 2
 ages 2
 ago 1
@@ -28,7 +28,7 @@ americans 1
 ammunition 1
 an 5
 anarchy 1
-and 51
+and 49
 another 5
 answer 1
 antiquity 1
@@ -162,7 +162,7 @@ doubt 1
 dozen 1
 drawn 1
 drift 2
-each 3
+each  3
 earth 1
 easily 3
 east 2
@@ -170,7 +170,7 @@ economical 1
 efficient 1
 effort 1
 empires 2
-end 5
+end 4
 enormous 1
 epoch 1
 equality 1
@@ -270,7 +270,7 @@ international 2
 into 2
 invention 2
 is 23
-it 27
+it 26
 its 4
 james 2
 japan 1
@@ -321,8 +321,8 @@ more 5
 moroccans 1
 most 2
 mr 1
-much 3
-musket  3
+much 2
+musket 3
 muskets 1
 namely 1
 nation 2
@@ -345,7 +345,8 @@ object 1
 observers 1
 obvious 1
 obviously 1
-of 58
+of 1
+of 56
 off 3
 oligarchy 1
 on 8
@@ -354,7 +355,7 @@ one 8
 only 8
 opinion 1
 oppressed 1
-or 10
+or  10
 orwell 1
 other 3
 others 1
@@ -441,7 +442,6 @@ said 1
 same 2
 scale 1
 scientific 1
-scores 1
 seconds 1
 secret 1
 secrets 1
@@ -465,7 +465,7 @@ smuggled 1
 so 7
 social 1
 solved 1
-some  4
+some 4
 something 1
 sometimes 1
 source 1
@@ -496,7 +496,8 @@ technique 1
 tend 1
 than 2
 that 30
-the 43
+the 1
+the 41
 the 71
 their 2
 them 3
@@ -514,7 +515,7 @@ third 1
 this 8
 though 1
 threat 1
-three 5
+three 4
 thus 1
 tibetans 1
 time 2
