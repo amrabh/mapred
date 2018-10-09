@@ -374,6 +374,22 @@ void mapp(string infile, bool wordcount, int maps){
         }
         // map
         process_func((char*)"./sortwords", maps, words.size());
+        
+        for(int i = 0; i < words.size(); i++){
+            vecWord a = vecWord(data[i].word, 0);
+            w.push_back(a);
+        }
+
+        int split = words.size()/maps;
+        for(int i = 1; i < maps - 1; i++){
+            int high = (i + 1)*split;
+            Wmerge(0, i*split, high);
+        }
+        Wmerge(0, (maps-1)*split, w.size());
+
+        for(int i = 0; i < w.size(); i++){
+            strcpy(data[i].word, w[i].word.c_str());
+        }
     }
     else{
         if(ftruncate(fd, nums.size()*sizeof(int)) == -1){
@@ -386,6 +402,23 @@ void mapp(string infile, bool wordcount, int maps){
             data[i] = nums.at(i);
         }
         process_func((char*)"./sortnums", maps, nums.size());
+
+        int nsize = nums.size();
+        nums.clear();
+        for(int i = 0; i < nsize; i++){
+            nums.push_back(data[i]);
+        }
+
+        int split = nsize/maps;
+        for(int i = 1; i < maps - 1; i++){
+            int high = (i + 1)*split;
+            merge(0, i*split, high);
+        }
+        merge(0, (maps-1)*split, w.size());
+
+        for(int i = 0; i < w.size(); i++){
+            data[i] = nums[i];
+        }
     }
 }
 
@@ -397,25 +430,30 @@ void reduce(string outfile, bool wordcount, int reds){
        wordhash *data = (wordhash*)mmap(0, words.size()*sizeof(wordhash), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
        vector<vecWord> wordfreqs;
-       vecWord v = vecWord(data[0].word, data[0].freq);
-       wordfreqs.push_back(v);
-       ofstream file(outfile);
-       int j;
-       for(int i = 1; i < words.size(); i++){
-           v = vecWord(data[i].word, data[i].freq);
-           j = wordfreqs.size()-1;
-           if(v.word == wordfreqs[j].word){
-               wordfreqs[j].freq += v.freq;
-           }
-           else{
-               file << wordfreqs[j].word << " " << wordfreqs[j].freq << endl;
-               wordfreqs.push_back(v);
-           }
+       
+       for(int i = 0; i < words.size(); i++){
+           vecWord v = vecWord(data[i].word, data[i].freq);
+           wordfreqs.push_back(v);
        }
-       if(wordfreqs[j].word != v.word){
-           file << v.word << " " << v.freq << endl;
-       }
-       file.close();
+       
+
+        ofstream file(outfile);
+        string s = wordfreqs[0].word;
+        int f = wordfreqs[0].freq;
+        
+        for(int i = 1; i < w.size(); i++){
+            if(wordfreqs[i].word == s){
+                f += wordfreqs[i].freq;
+            }
+            else{
+                file << s << " " << f << endl;
+                s = wordfreqs[i].word;
+                f = wordfreqs[i].freq;
+            }
+        }
+        file << s << " " << f << endl;
+
+        file.close();
     }
     else{
         long *data = (long*)mmap(0, nums.size()*sizeof(long), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -532,7 +570,7 @@ void ECparse(string filename, bool wc, int t){
 }
 
 // merge all maps into first map
-void merge(string outfile, bool wc){
+void mapMerge(string outfile, bool wc){
     ofstream file(outfile);
     if(wc){
         for(int i = 1; i < wo.size(); i++){
@@ -599,6 +637,6 @@ int main(int argc, char **argv){
         string infile = argv[8];
         string outfile = argv[10];
         ECparse(infile, wordcount, threads);
-        merge(outfile, wordcount);
+        mapMerge(outfile, wordcount);
     }
 }
