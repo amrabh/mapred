@@ -28,7 +28,7 @@ americans 	 1
 ammunition 	 1
 an 	 5
 anarchy 	 1
-and 	 50
+and 	 51
 another 	 4
 answer 	 1
 antiquity 	 1
@@ -39,7 +39,7 @@ anywhere 	 1
 apparent 	 1
 appears 	 1
 apropos 	 1
-are 	 7
+are 	10
 argument 	 1
 as 	 17
 asia 	 2
@@ -85,7 +85,7 @@ burnham 	 1
 burnhams 	 2
 business 	 1
 but 	 10
-by 		3
+by 	4
 came 	 1
 can 	 4
 cap 	 1
@@ -125,7 +125,7 @@ correct 	 1
 cost 	 1
 costly 	 1
 could 	 5
-countries 		2
+countries 	2
 country 	 1
 curiously 	 1
 cut 	 1
@@ -170,7 +170,7 @@ economical 	 1
 efficient 	 1
 effort 	 1
 empires 	 2
-end 	 4
+end 	 5
 enormous 	 1
 epoch 	 1
 eurasian 	 1
@@ -188,7 +188,8 @@ fairly 	 1
 fantastically 	 1
 far 	 1
 favoured 	 1
-few 	 3
+feudalism 	 1
+few 	 4
 fewer 	 3
 fifty 	 1
 fight 	 1
@@ -253,10 +254,11 @@ indefinitely 	 1
 independence 	 1
 indirect 	 1
 individual 	 2
+industrial 	 2
 industrialised 	 1
 infer 	 1
 information 	 1
-inherently 		2
+inherently 	2
 insulating 	 1
 insurrection 	 1
 intensify 	 1
@@ -266,7 +268,7 @@ into 	 2
 invention 	 2
 is 	 23
 it 	 26
-its 	 3
+its 	 4
 james 	 2
 japan 	 1
 kind 	 2
@@ -306,7 +308,7 @@ meant 	 1
 merely 	 1
 method 	 1
 might 	 5
-military 	 1
+military 	 2
 millions 	 1
 miscalculation 	 1
 moment 	 1
@@ -320,6 +322,7 @@ much 	 3
 musket 	 3
 muskets 	 1
 namely 	 1
+nation 	 2
 national 	 2
 nations 	 1
 natural 	 1
@@ -348,15 +351,15 @@ one 	 8
 only 	 8
 opinion 	 1
 oppressed 	 1
-or 	 8
+or 	 10
 orwell 	 1
 other 	 3
 others 	 1
 our 	 1
-out 	 7
+out 	7
 outer 	 1
 outlook 	 1
-over 	 2
+over 	 5
 overthrow 	 1
 own 	 2
 parceled 	 1
@@ -371,6 +374,7 @@ permanent 	 1
 physicists 	 1
 picture 	 1
 pieces 	 1
+planes 	 1
 plant 	 1
 plunged 	 1
 point 	 1
@@ -458,11 +462,13 @@ smuggled 	 1
 so 	 7
 social 	 1
 solved 	 1
-some 		4
+some 	4
 something 	 1
 sometimes 	 1
 source 	 1
 sovereignty 	 1
+species 	 1
+splitting 	 1
 stable 	 1
 state 	 5
 statement 	 1
@@ -487,7 +493,7 @@ technique 	 1
 tend 	 1
 than 	 2
 that 	 30
-the 	 36
+the 		114
 their 	 2
 them 	 3
 theory 	 1
@@ -520,7 +526,7 @@ turned 	 3
 two 	 2
 tyrannical 	 1
 ultimately 	 1
-unable 	 1
+unable 	2
 unconquerable 	 1
 under 	 2
 understanding 	 1
@@ -529,7 +535,7 @@ unpredictable 	 1
 up 	 1
 upset 	 1
 urgent 	 1
-us 	 1
+us 	 5
 use 	 2
 useless 	 1
 various 	 2
@@ -571,7 +577,7 @@ wrote 	 1
 years 	 7
 yet 	 2
 you 	 1
-— 	 13
+— 	 14
 ‘abolished 	 1
 ‘cold 	 1
 ‘how 	 1

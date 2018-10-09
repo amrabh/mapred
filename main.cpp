@@ -52,17 +52,17 @@ void *exec(void *dummyPtr){
     string words;
     int word_Count = 1;
     words = temp[0];
-    for(int i=0; i < temp.size(); ++i){
+    for(int i=0; i < temp.size(); i++){
         //mtx.lock();
         //cout<<"Word 2 is "<< v1[i+1] <<'\n';
         if(words != temp[i] || words == temp[temp.size()]){
             //cout<<words<<" "<< word_Count<<endl;
             std::string s = std::to_string(word_Count);
-            word_Count = 0;
             string ss = words +" "+ s;
             sc.push_back(ss);
             pthread_cond_signal( &cond );
             words = temp[i];
+            word_Count = 0;
         }
         word_Count++;
         
@@ -82,8 +82,11 @@ void wordcountMapThreads(string filename, int nthreads){
         while(getline (myfile,line)){
             bool my_predicate(char c);
             string s;
-            s = line;
-            s.erase(remove_if(s.begin(), s.end(), [](char c) {return ispunct(c); } ), s.end());
+            //s.erase(remove_if(s.begin(), s.end(), [](char c) {return ispunct(c); } ), s.end());
+            std::remove_copy_if(line.begin(), line.end(),
+                                std::back_inserter(s), //Store output
+                                std::ptr_fun<int, int>(&std::ispunct)
+                                );
             
             /**char chars[] = "—";
              
@@ -116,18 +119,18 @@ void wordcountMapThreads(string filename, int nthreads){
         int parts = int(v_size/nthreads + 1);
         
         for ( int j = 0; j<nthreads; j++){
-            for (int i=0; i<parts; i++){
+            for (int i=0; i<parts+1; i++){
                 temp.push_back(v1[i]);
             }
             if(v1.size()>parts){
-                v1.erase(v1.begin(),v1.begin()+(parts)+1);
+                v1.erase(v1.begin(),v1.begin()+parts+1);
             }
             else{
                 //cout<<"Size of v1 is :"<<v1.size();
                 //cout<<"I am in the else loop"<<endl;
                 //cout<<"------------------------------------"<<endl;
                 temp.clear();
-                for(unsigned i = 0;i<v1.size();i++){
+                for(unsigned i = 0;i<v1.size()+1;i++){
                     temp.push_back(v1[i]);
                 }
             }
@@ -154,7 +157,7 @@ void *addtokens(void *dummyPtr){
     int word_Count = 1;
     words1 = temp1[0];
     //cout<<"Word is "<< words1 <<'\n';
-    for(int i=1; i < temp1.size(); i++){
+    for(int i=1; i < temp1.size()+1; ++i){
         //cout<<"Word 2 is "<< v1[1] <<'\n';
         if(words1 != temp1[i]){
             //cout<<" "<<'\n';
@@ -181,7 +184,7 @@ void wordcountReduceThreads(vector<string> s, int threads){
             temp1.push_back(s[i]);
         }
         if(s.size()>parts){
-            s.erase(s.begin(),s.begin()+(parts)+1);
+            s.erase(s.begin(),s.begin()+(parts));
         }
         else{
             //print(s);
@@ -210,7 +213,7 @@ void wordcountReduceThreads(vector<string> s, int threads){
     finals.push_back(result[0]);
     for(int i=1; i<result.size()+1; ++i){
         if(result[i-1].substr(0,result[i-1].size()-3) == result[i].substr(0,result[i].size()-3)){
-            string words = result[i-1].substr(0,result[i-1].size()-2);
+            string words = result[i-1].substr(0,result[i-1].size()-3);
             string s1 = (result[i-1].substr(result[i-1].size()-3,result[i-1].size()));
             string s2 = (result[i].substr(result[i].size()-3,result[i].size()));
             stringstream geek(s1);
