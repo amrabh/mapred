@@ -32,7 +32,7 @@ struct vecWord{
     string word;
     int freq;
     vecWord(char* w, int f){
-        word = string(w);
+        word = w;
         freq = f;
     }
     vecWord(string w, int f){
