@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -20,22 +21,18 @@ int main(int argc, char **argv) {
 	int fd = shm_open("shm", O_RDWR, 0666);
 
 	// data will be an array of wordhash structs
-	int *data = (int*)mmap(0, size * sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	long *data = (long*)mmap(0, size * sizeof(long), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 
 	// convert c string to c++ string
-	vector<int> s;
+	vector<long> s;
 	for (int i = begin; i < end; i++) {
-
 		s.push_back(data[i]);
 	}
-	sort(s.begin(), s.end(), vecComp());
+	sort(s.begin(), s.end());
 
 	// get c string from c++ string
 	for (int i = 0; i < s.size(); i++) {
 		data[i + begin] = s[i];
 	}
-
 	return 0;
-
-
 }

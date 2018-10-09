@@ -392,11 +392,12 @@ void mapp(string infile, bool wordcount, int maps){
         }
     }
     else{
-        if(ftruncate(fd, nums.size()*sizeof(int)) == -1){
+        if(ftruncate(fd, nums.size()*sizeof(long)) == -1){
             perror("ftruncate");
             return;
         }
         long *data = (long*)mmap(0, nums.size()*sizeof(long), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+        sort(nums.begin(), nums.end());
 
         for(int i = 0; i < nums.size(); i++){
             data[i] = nums.at(i);
@@ -404,7 +405,8 @@ void mapp(string infile, bool wordcount, int maps){
         process_func((char*)"./sortnums", maps, nums.size());
 
         int nsize = nums.size();
-        nums.clear();
+        vector<long>().swap(nums);
+
         for(int i = 0; i < nsize; i++){
             nums.push_back(data[i]);
         }
