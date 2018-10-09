@@ -27,11 +27,10 @@ using namespace std;
 #ifndef MERGE_H
 #define MERGE_H
 
-/
 // The structure for setting a linked list with a node
 struct Node
 {
-	int data;
+	int item;
 	Node* next;
 };
 
@@ -40,7 +39,7 @@ void printList(Node* node)
 {
 	while (node != NULL)
 	{
-		printf("%d ", node->data);
+		printf("%d ", node->item);
 		node = node->next;
 	}
 }
@@ -48,53 +47,59 @@ void printList(Node* node)
 // Comparing two process to see what the order goes betwen the two
 Node* sortingMerge(Node* a, Node* b)
 {
-	Node* result = NULL;
+	Node* listResult = NULL;
 
 	// using for our base cases
-	if (a == NULL)
-	{
-		return (b);
-	}
-
-	else if (b == NULL)
+	if (b == NULL)
 	{
 		return (a);
 	}
+
+	else if (a == NULL)
+	{
+		return (b);
+	}
 	// comparing two list to help decided where the word is located
+	
+	
 	if (a->data <= b->data)
 	{
-		result = a;
-		result->next = sortingMerge(a->next, b);
+		listResult = a;
+		listResult->next = sortingMerge(a->next, b);
 	}
+	
+	
 	else
 	{
-		result = b;
-		result->next = sortingMerge(a, b->next);
+		listResult = b;
+		listResult->next = sortingMerge(a, b->next);
 	}
 
-	return result;
+	return listResult;
 }
 
 
-Node* mergeKLists(Node* arr[], int last)
+Node* mergeTheLists(Node* arr[], int lastone)
 {
 	// repeating this process until one list is left
-	while (last != 0)
+	while (lastone != 0)
 	{
-		int i = 0, j = last;
+		j = lastone;
+		int i = 0; 
 
-		// (i, j) which is a pair 
+		// Comparing the pair 
 		while (i < j)
 		{
 			// merge List i with List j and storing in the list i
 			arr[i] = sortingMerge(arr[i], arr[j]);
 
 			// go to next pair
-			i++, j--;
+			j--; 
+			i++;
 
 	// Once all done, giving one last update to the list
 			if (i >= j)
-				last = j;
+				lastone = j;
 		}
 	}
 
@@ -105,55 +110,19 @@ Node* mergeKLists(Node* arr[], int last)
 Node *newNode(int data)
 {
 	struct Node *temp = new Node;
+
 	temp->data = data;
+
 	temp->next = NULL;
+
 	return temp;
-
-	
-
+}
 
 
 
 
 
-	// Bubble Sorting the string!       
 
-
-	// Each process will have it's string of  works be sorted in aplebetical order
-	
-	
-	// for each proccess
-
-
-	void sortStrings(char arr[][MAX], int n)
-	{
-		char temp[MAX];
-
-		// Sorting strings using bubble sort 
-		for (int j = 0; j<n - 1; j++)
-		{
-			for (int i = j + 1; i<n; i++)
-			{
-				if (strcmp(arr[j], arr[i]) > 0)
-				{
-					strcpy(temp, arr[j]);
-					strcpy(arr[j], arr[i]);
-					strcpy(arr[i], temp);
-				}
-			}
-		}
-	}
-
-	int main()
-	{
-		
-		int n = sizeof(arr) / sizeof(arr[0]);
-
-		sortStrings(arr, n);
-
-		// from here the string should sorted in order
-		return 0;
-	}
 	
 }
 #endif Merge_H
