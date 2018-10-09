@@ -88,6 +88,228 @@ void fill_nums(string filename){
     file.close();
 }
 
+void numsort(int low, int high){
+    sort(nums.begin()+low, nums.begin()+high);
+}
+
+bool vecComp(vecWord a, vecWord b){
+    return a.word < b.word;
+}
+void vecSort(int low, int high){
+    sort(w.begin()+low, w.begin()+high, vecComp);
+}
+
+
+void parse(string filename, bool wc){
+    if(wc){
+        ifstream file(filename);
+        string line;
+    
+        while(getline(file,line)){
+            size_t prev = 0, pos;
+            while((pos = line.find_first_of(" .,;:!)-\t\n\v\f\r", prev)) != string::npos){
+                if(pos > prev){
+                    if(line.substr(prev, pos-prev) != "—" && line.substr(prev, pos-prev) != "’"){
+                        string s = line.substr(prev,pos-prev);
+                        transform(s.begin(), s.end(), s.begin(), ::tolower);
+                        w.push_back(vecWord(s,0));
+                    }
+                }
+                prev = pos + 1;
+            }
+            if(prev < line.length()){
+                if(line.substr(prev, string::npos) != "—" && line.substr(prev, string::npos) != "’"){
+                    string s = line.substr(prev, string::npos);
+                    transform(s.begin(), s.end(), s.begin(), ::tolower);
+                    w.push_back(vecWord(s,0));
+                }
+            }
+        }
+        file.close();
+    }
+    else fill_nums(filename);
+}
+
+// word merge two vecword arrays
+void Wmerge(int low, int mid, int high){
+    int size1 = mid - low;
+    int size2 = high - mid;
+
+    vector<vecWord> a1;
+    vector<vecWord> a2;
+
+    for(int i = 0; i < size1; i++){
+        a1.push_back(w[i + low]);
+    }
+    for(int i = 0; i < size2; i++){
+        a2.push_back(w[i + mid]);
+    }
+
+    int k = low; 
+    int i = 0, j = 0;
+  
+    // merge 
+    while (i < size1 && j < size2) { 
+        if (a1[i].word <= a2[j].word) 
+            w[k++] = a1[i++]; 
+        else
+            w[k++] = a2[j++]; 
+    } 
+  
+    // values left on either side 
+    while (i < size1) { 
+        w[k++] = a1[i++]; 
+    } 
+
+    while (j < size2) { 
+        w[k++] = a2[j++]; 
+    } 
+}
+
+// numbers merge two sorted arrays
+void merge(int low, int mid, int high){
+    int size1 = mid - low;
+    int size2 = high - mid;
+
+    long a1[size1];
+    long a2[size2];
+
+    for(int i = 0; i < size1; i++){
+        a1[i] = nums[i + low];
+    }
+    for(int i = 0; i < size2; i++){
+        a2[i] = nums[i + mid];
+    }
+
+    int k = low; 
+    int i = 0, j = 0;
+  
+    // merge 
+    while (i < size1 && j < size2) { 
+        if (a1[i] <= a2[j]) 
+            nums[k++] = a1[i++]; 
+        else
+            nums[k++] = a2[j++]; 
+    } 
+  
+    // values left on either side 
+    while (i < size1) { 
+        nums[k++] = a1[i++]; 
+    } 
+
+    while (j < size2) { 
+        nums[k++] = a2[j++]; 
+    } 
+}
+
+void threadmapp(int t, bool wc){
+    int split;
+    if(wc){
+        
+        split = w.size()/t;
+        vector<thread> ts;
+
+        // split threads for mergesort
+        for(int i = 0; i < t - 1; i++){
+            int low = i*split;
+            int high = (i+1)*split;
+            
+            ts.push_back(thread(vecSort, low, high));
+        }
+        ts.push_back(thread(vecSort, (t-1)*split, w.size()));
+
+        // wait for threads to finish
+        for(auto &t: ts){
+            t.join();
+        }
+
+        for(int i = 1; i < t - 1; i++){
+            int high = (i + 1)*split;
+            Wmerge(0, i*split, high);
+        }
+        Wmerge(0, (t-1)*split, w.size());
+    }
+    else{
+        split = nums.size()/t;
+        vector<thread> ts;
+        for(int i = 0; i < t - 1; i++){
+            int low = i*split;
+            int high = (i+1)*split;
+
+            ts.push_back(thread(numsort, low, high));
+        }
+        ts.push_back(thread(numsort, (t-1)*split, nums.size()));
+        
+        for(int i = 0; i < ts.size(); i++){
+            ts[i].join();
+        }
+        
+        for(int i = 1; i < t - 1; i++){
+            int high = (i + 1)*split;
+            merge(0, i*split, high);
+        }
+        merge(0, (t-1)*split, nums.size());
+    }
+}
+void tReduce(int low, int high){
+    // merges common words
+    for(int i = low; i < high; i++){
+        string s = w[i].word;
+        int freq = 0;
+        int j = i;
+        while(i < high && w[i].word == s){
+            freq++;
+            i++;
+        }
+        w[j].freq = freq;
+        i--;
+    }
+}
+
+void threadreduce(string outfile, int t, bool wc){
+    int split;
+    if(wc){
+        split = w.size()/t;
+        vector<thread> ts;
+
+        // split threads for mergesort
+        for(int i = 0; i < t - 1; i++){
+            int low = i*split;
+            int high = (i+1)*split;
+            
+            ts.push_back(thread(tReduce, low, high));
+        }
+        ts.push_back(thread(tReduce, (t-1)*split, w.size()));
+
+        // wait for threads to finish
+        for(auto &t: ts){
+            t.join();
+        }
+
+        ofstream file(outfile);
+        string s = w[0].word;
+        int f = w[0].freq;
+        
+        for(int i = 1; i < w.size(); i++){
+            if(w[i].word == s){
+                f += w[i].freq;
+            }
+            else{
+                file << s << " " << f << endl;
+                s = w[i].word;
+                f = w[i].freq;
+            }
+        }
+        file << s << " " << f << endl;
+    }
+    else{
+        ofstream file(outfile);
+        for(long k: nums){
+            file << k << endl;
+        }
+    }
+}
+
 void process_func(char* func, int procs, int size){
     int status = 0;
     int split;
@@ -108,7 +330,7 @@ void process_func(char* func, int procs, int size){
             char begin[10];
             sprintf(begin, "%d", (i*split));
             char end[10];
-            sprintf(end, "%d", (i+1)*split - 1);
+            sprintf(end, "%d", (i+1)*split);
 
             char* args[5] = {func, begin, end, total};
             execvp(func, args);
@@ -122,7 +344,7 @@ void process_func(char* func, int procs, int size){
         char begin[10];
         sprintf(begin, "%d", ((procs-1)*split));
         char end[10];
-        sprintf(end, "%d", size - 1);
+        sprintf(end, "%d", size);
             
         char* args[5] = {(char*) func, begin, end, total};
         execvp(func, args);
@@ -357,9 +579,17 @@ int main(int argc, char **argv){
         int reds = stoi(argv[8]);
         string infile = argv[10];
         string outfile = argv[12];
-        mapp(infile, wordcount, maps);
-        reduce(outfile, wordcount, reds);
-        shm_unlink("/shm");
+        
+        if(proc){
+            mapp(infile, wordcount, maps);
+            reduce(outfile, wordcount, reds);
+            shm_unlink("/shm");
+        }
+        else{ // threads
+            parse(infile, wordcount);
+            threadmapp(maps, wordcount);
+            threadreduce(outfile, reds, wordcount);
+        }
     }
     else{ // extra
         // 6 - threads
@@ -369,8 +599,6 @@ int main(int argc, char **argv){
         string infile = argv[8];
         string outfile = argv[10];
         ECparse(infile, wordcount, threads);
-        //threadsort(threads, wordcount, outfile);
         merge(outfile, wordcount);
-        
     }
 }
